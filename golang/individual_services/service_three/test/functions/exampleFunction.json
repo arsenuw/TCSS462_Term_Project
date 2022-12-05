@@ -1,6 +1,0 @@
-{
-	"function": "ServiceThreeGo",
-    "platform": "AWS Lambda",
-    "source": "../go_template",
-    "endpoint": ""
-}

@@ -1,6 +1,0 @@
-{
-	"function": "ServiceOne",
-    "platform": "AWS Lambda",
-    "source": "../../main",
-    "endpoint": ""
-}

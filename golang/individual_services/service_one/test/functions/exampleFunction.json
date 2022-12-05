@@ -1,6 +1,0 @@
-{
-	"function": "ServiceOneGo",
-    "platform": "AWS Lambda",
-    "source": "../go_template",
-    "endpoint": ""
-}
