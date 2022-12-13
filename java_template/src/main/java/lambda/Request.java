@@ -14,7 +14,8 @@ public class Request {
     private int col; 
     
     private String database;
-    private String sqlbucketname;
+    private String sqlbucketname; 
+    private String sqlname;
 
     public String getName() {
         return name;
@@ -70,7 +71,15 @@ public class Request {
 
     public void setSQLBucketName(String sqlbucketname) { 
         this.sqlbucketname = sqlbucketname;
-    }
+    } 
+    
+    public String getsqlname() { 
+    	return sqlname;
+	} 
+	
+    public void setsqlname(String name) { 
+    sqlname = name;
+   }
 
     /**
      * @return the row

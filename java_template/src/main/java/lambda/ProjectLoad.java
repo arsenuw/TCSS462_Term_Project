@@ -64,10 +64,14 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
 
         String bucketname = request.getBucketname(); 
         String filename = request.getFilename();    
-        String sqlbucketname= request.getSQLbucketName();
+       // String sqlbucketname= request.getSQLbucketName(); 
+        //String sqlname = request.getsqlname();  
+        String sqlbucketname = "term-project-bucket-462";
+        String sqlname = "mytest.db";
 
         String srcBucket = bucketname; 
-        String srcKey = filename; 
+        String srcKey = filename;  
+ 
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build(); 
     //get object file using source bucket and srcKey name
     S3Object s3Object = s3Client.getObject(new GetObjectRequest(srcBucket, srcKey));
@@ -87,7 +91,7 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
         
         pwd = System.getProperty("user.dir");
         logger.log("pwd=" + pwd);
-        
+        r.setVersion("version");
         try
         {
             // Connection string an in-memory SQLite DB
@@ -111,13 +115,14 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
                 ps.execute();
             }
             rs.close();
-
+                /* 
             // Insert row into mytable
             ps = con.prepareStatement("insert into mytable values('" + request.getName() + "','" +
                  UUID.randomUUID().toString().substring(0,8) + "','" + UUID.randomUUID().toString().substring(0,4) + "');");
-            ps.execute();
+            ps.execute(); */
             InputStream objectData = s3Object.getObjectContent();
-            Scanner scanner = new Scanner(objectData); 
+            Scanner scanner = new Scanner(objectData);  
+            /* 
             int index =0; 
             ArrayList<String> list = new ArrayList<String>();
             while(scanner.hasNextLine()) {  
@@ -146,21 +151,38 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
                 statement+= "');";  
                 ps = con.prepareStatement(statement);
                 ps.execute();
-            } 
+            }   */
 
             // better implementation 
             String sqlinfo = "insert into mytable "; 
             sqlinfo+= "(Region text, Country text, ItemType text, SalesChannel text,OrderPriority"  
             +"text,OrderDate date,orderID text,ShipDate date,UnitsSold text, UnitPrice text,UnitCost text, TotalRevenue text,TotalCost text, TotalProfit Text)"; 
-            sqlinfo+="VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"; 
-            while(scanner.hasNextLine()) { 
+            sqlinfo+="VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";  
+            int temp =0;
+            while(scanner.hasNextLine()) {  
+                if(temp !=0) { 
                 String[] arr = scanner.nextLine().split(","); 
                 ps = con.prepareStatement(sqlinfo); 
-                ps.setString(0,arr[0]); 
-
+                ps.setString(1,arr[0]);  
+                ps.setString(2,arr[1]);  
+                ps.setString(3,arr[2]);  
+                ps.setString(4,arr[3]); 
+                ps.setString(5,arr[4]); 
+                ps.setString(6,arr[5]);  
+                ps.setString(7,arr[6]);  
+                ps.setString(8,arr[7]);  
+                ps.setString(9,arr[8]);  
+                ps.setString(10,arr[9]); 
+                ps.setString(11,arr[10]); 
+                ps.setString(12,arr[11]); 
+                ps.setString(13,arr[12]); 
+                ps.setString(14,arr[13]);  
+                ps.execute(); 
+                } 
+                temp++;
             }
-
-
+                scanner.close();
+             
 
             // Query mytable to obtain full resultset
             ps = con.prepareStatement("select * from mytable;");
@@ -171,15 +193,15 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
             LinkedList<String> ll = new LinkedList<String>();
             while (rs.next())
             {
-                logger.log("name=" + rs.getString("name"));
-                ll.add(rs.getString("name"));
-                logger.log("col2=" + rs.getString("col2"));
-                logger.log("col3=" + rs.getString("col3"));
+                logger.log("name=" + rs.getString("Region"));
+                ll.add(rs.getString("Region"));
+               // logger.log("col2=" + rs.getString("col2"));
+              //  logger.log("col3=" + rs.getString("col3"));
             }
             rs.close();
             con.close();  
 
-            r.setNames(ll);
+            r.setNames(ll); 
             
             // sleep to ensure that concurrent calls obtain separate Lambdas
             try
@@ -208,11 +230,12 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
         
         inspector.consumeResponse(r);    
        ObjectMetadata meta = new ObjectMetadata();
-        try {  
-            InputStream is = new FileInputStream("mytable.db");    
-            meta.setContentLength((new File("mytable.db").length()));
+        try {   
+            File stuff = new File(sqlname);
+            InputStream is = new FileInputStream(stuff);    
+            meta.setContentLength(stuff.length());
             meta.setContentType("text/plain");
-            s3Client.putObject(sqlbucketname, filename, is, meta); 
+            s3Client.putObject(sqlbucketname, sqlname, is, meta); 
         } 
         catch(FileNotFoundException e) { 
             System.out.println("impossible");
