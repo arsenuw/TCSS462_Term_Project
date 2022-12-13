@@ -21,6 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  * uwt.lambda_test::handleRequest
@@ -30,11 +33,15 @@ import java.util.Scanner;
  */
 public class Transform implements RequestHandler<Request, HashMap<String, Object>> {
 
+    String readBucketName = "";
+    String writeBucketName = "";
 
-    String bucketname = "";
-    String filename = "";
+    String readFilename = "";
+    String writeFilename = "";
     // Collect inital data.
     Inspector inspector = new Inspector();
+
+    String outputCSV = "output.csv";
 
     /**
      * Lambda Function Handler
@@ -53,46 +60,67 @@ public class Transform implements RequestHandler<Request, HashMap<String, Object
         inspector.addAttribute("message", "Hello " + request.getName()
                 + "! This is an attributed added to the Inspector!");
 
+        //NEED A READ BUCKETNAME
+        readBucketName = request.getReadBucketName();
+
+        writeBucketName = request.getWriteBucketName();
         
-        bucketname = request.getBucketname();
-        filename = request.getFilename();
+        readFilename = request.getReadilename();
+        // need a read file name and a write file name
+        writeFilename = request.getWriteFilename();
 
-        String inFile = "X:/home/arsen/tcss462_term_project/100 Sales Records.csv";
-        String outFile = "/home/arsen/tcss462_term_project/out.csv";
-        updateCSV(inFile, outFile);
+        //String inFile = "X:/home/arsen/tcss462_term_project/SAAF/java_template/SalesRecords.csv";
+        //String outFile "X:/home/arsen/tcss462_term_project/SAAF/java_template/out.csv";
+        //updateCSV(writeFilename);
 
-        //String srcBucket = bucketname;
-        //String srcKey = filename; //the test.csv file
-
-        /** 
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
+        /*
+         * Reading from s3 bucket
+         */
+        //Creates new file on S3 bucket
+        AmazonS3 s3ClientRead = AmazonS3ClientBuilder.standard().build();
         //get object file using source bucket and srcKey name
-        S3Object s3Object = s3Client.getObject(new GetObjectRequest(bucketname, filename));
+        S3Object s3Object = s3ClientRead.getObject(new GetObjectRequest(readBucketName, readFilename));
 
         //get content of the file
         InputStreamReader objectData = new InputStreamReader(s3Object.getObjectContent());
 
-        //Reading the CSV file
-        try {
-            List<List<String>> text = new ArrayList<>();
-            BufferedReader reader = new BufferedReader(objectData);
-            String line = reader.readLine();
+        //Call updateCSV
+        updateCSV(objectData);
 
-            while (line != null) {
-                String[] tokens = line.split(",");
-                text.add(Arrays.asList(tokens));
-            }
-
-            //call the Transform the CSV 
-
-        } catch (Exception e) {
-            // TODO: handle exception
+        /*
+         * Write to s3 bucket
+         */
+        Scanner sc;
+        byte[] bytes = null;
+        sc = new Scanner(outputCSV);
+        sc.useDelimiter("\n");
+        StringWriter file = new StringWriter();
+        while (sc.hasNext()) {
+            file.append(sc.next());
         }
-        LambdaLogger logger = context.getLogger();
-        logger.log("ProcessCSV bucketname:" + bucketname + " filename:" + filename + " avg-element:" + avg + " total:" + total);
-        */
+        bytes = file.toString().getBytes(StandardCharsets.UTF_8);
+        System.out.print(file);
+        InputStream inputStream = new ByteArrayInputStream(bytes);
+        ObjectMetadata meta = new ObjectMetadata();
+        meta.setContentLength(bytes.length);
+        meta.setContentType("text/plain");
 
-    
+        // Create new file on S3
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
+        s3Client.putObject(writeBucketName, writeFilename, inputStream, meta);
+        //Collect inital data.
+
+        sc.close();
+        Response response = new Response();
+        //response.setB(writeBucketName);
+        //response.setF(writeFilename);
+ 
+         // Create and populate a separate response object for function output.
+         // (OPTIONAL)
+         response.setValue("Bucket: " + writeBucketName + " filename:" + writeFilename + " processed.");
+         inspector.consumeResponse(response);
+
+        
 
         // ****************END FUNCTION IMPLEMENTATION***************************
 
@@ -151,13 +179,16 @@ public class Transform implements RequestHandler<Request, HashMap<String, Object
         }
     }
 
-    public void updateCSV(String inFile, String outFile) {
+    public void updateCSV(InputStreamReader objectData) {
+
+        //Do the transformations to the csv file
         String inString = "";
         HashSet<String> orders = new HashSet<>(); // Store all order IDs
         final String lineSep=System.getProperty("line.separator");
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(new File(inFile)));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(outFile)));
+            BufferedReader reader = new BufferedReader(objectData);
+            
+            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(outputCSV)));
             int i = 0;
             while ((inString = reader.readLine()) != null) {
                 if(i == 0){
@@ -198,27 +229,8 @@ public class Transform implements RequestHandler<Request, HashMap<String, Object
             System.out.println("File Error");
         }
 
-        filename = outFile;
+        //filename = outFile;
         
-        //Write to S3 bucket
-        StringWriter sw = new StringWriter();
-
-        byte[] bytes = sw.toString().getBytes(StandardCharsets.UTF_8);
-        InputStream is = new ByteArrayInputStream(bytes);
-        ObjectMetadata meta = new ObjectMetadata();
-        meta.setContentLength(bytes.length);
-        meta.setContentType("text/plain");
-        
-        // Create new file on S3
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
-        
-        s3Client.putObject(bucketname, filename, is, meta);
-
-        // Create and populate a separate response object for function output.
-        // (OPTIONAL)
-        Response response = new Response();
-        response.setValue("Bucket: " + bucketname + " filename:" + filename + " processed.");
-        inspector.consumeResponse(response);
 
     }
 

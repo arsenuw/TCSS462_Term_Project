@@ -8,8 +8,11 @@ public class Request {
 
     String name;
 
-    private String bucketname;
-    private String filename;
+    private String readBucketName;
+    private String writeBucketName;
+
+    private String readFilename;
+    private String writeFilename;
     private int row;
     private int col;
 
@@ -34,20 +37,36 @@ public class Request {
 
     }
 
-    public String getBucketname(){
-        return bucketname;
+    public String getReadBucketName(){
+        return readBucketName;
     }
 
-    public void setBucketname(String bucketname){
-        this.bucketname = bucketname;
+    public void setReadBucketName(String readBucketName){
+        this.readBucketName = readBucketName;
     }
 
-    public String getFilename(){
-        return filename;
+    public String getWriteBucketName(){
+        return writeBucketName;
     }
 
-    public void setFilename(String filename){
-        this.filename = filename;
+    public void setWriteBucketName(String writeBucketName){
+        this.writeBucketName = writeBucketName;
+    }
+
+    public String getReadilename(){
+        return readFilename;
+    }
+
+    public void setReadFilename(String filename){
+        this.readFilename = filename;
+    }
+
+    public String getWriteFilename(){
+        return writeFilename;
+    }
+
+    public void setWriteFilename(String filename){
+        this.writeFilename = filename;
     }
 
     public int getCol(){
