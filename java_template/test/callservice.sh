@@ -1,16 +1,11 @@
 #!/bin/bash
 # JSON object to pass to Lambda Function
-json={"\"row\"":50,"\"col\"":10,"\"bucketname\"":\"test.bucket.462-562.f22.as\"","\"filename\"":\"SalesRecords.csv\""}
+json={""row"":50,""col"":10,""readBucketName"":"term-project-sales-bucket"",""readFilename"":"SalesRecords.csv"",""writeFilename"":"output.csv""writeBucketName"":"term-project-transformed""} 
+
 echo "Invoking Lambda function using API Gateway"
-time output=`curl -s -H "Content-Type: application/json" -X POST -d $json {https://dhysmom861.execute-api.us-east-2.amazonaws.com/tcss462_tutorial5_dev}`
+time output=curl -s -H "Content-Type: application/json" -X POST -d $json {https://j52bn6f2yd.execute-api.us-east-2.amazonaws.com/term_project_transform}
 echo “”
 echo ""
 echo "JSON RESULT:"
 echo $output | jq
 echo ""
-#echo "Invoking Lambda function using AWS CLI"
-#time output=`aws lambda invoke --invocation-type RequestResponse --function-name arsensh_tutorial5 --region us-east-2 --payload $json /dev/stdout | head -n 1 | head -c -2 ; echo`
-#echo ""
-#echo "JSON RESULT:"
-#echo $output | jq
-#echo ""
