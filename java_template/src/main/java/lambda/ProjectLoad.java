@@ -98,7 +98,8 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
            // Connection con = DriverManager.getConnection("jdbc:sqlite:"); 
 
             // Connection string for a file-based SQlite DB
-            Connection con = DriverManager.getConnection("jdbc:sqlite:/tmp/mytest.db");
+            Connection con = DriverManager.getConnection("jdbc:sqlite:/tmp/mytest.db"); 
+            
 
             // Detect if the table 'mytable' exists in the database
             PreparedStatement ps = con.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='mytable'");
@@ -106,12 +107,12 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
             if (!rs.next())
             {
                 // 'mytable' does not exist, and should be created
-                logger.log("trying to create table 'mytable'");
+                logger.log("trying to create table 'mytable'"); 
+               
               //  ps = con.prepareStatement("CREATE TABLE mytable ( name text, col2 text, col3 text);"); 
-                ps = con.prepareStatement("CREATE TABLE mytable ( Region text, Country text, ItemType text, SalesChannel text,OrderPrriority"  
-                +"text,OrderDate date,orderID text,ShipDate date,UnitsSold text, UnitPrice text,UnitCost text, TotalRevenue text,TotalCost text, TotalProfit Text);"); 
-
-
+                ps = con.prepareStatement("CREATE TABLE mytable ( region varchar(500), country varchar(500), itemtype varchar(500), saleschannel varchar(500), orderpriority varchar(500), orderdate varchar(500), orderid varchar(500), shipdate varchar(500), unitssold varchar(500), unitprice varchar(500), unitcost varchar(500), totalrevenue varchar(500), totalcost varchar(500), totalprofit varchar(500));"); 
+                //ps = con.prepareStatement("CREATE TABLE mytable ( name text, col2 text, col3 text);");
+                logger.log("created table");
                 ps.execute();
             }
             rs.close();
@@ -119,7 +120,8 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
             // Insert row into mytable
             ps = con.prepareStatement("insert into mytable values('" + request.getName() + "','" +
                  UUID.randomUUID().toString().substring(0,8) + "','" + UUID.randomUUID().toString().substring(0,4) + "');");
-            ps.execute(); */
+            ps.execute(); */ 
+            
             InputStream objectData = s3Object.getObjectContent();
             Scanner scanner = new Scanner(objectData);  
             /* 
@@ -153,11 +155,12 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
                 ps.execute();
             }   */
 
-            // better implementation 
-            String sqlinfo = "insert into mytable "; 
-            sqlinfo+= "(Region text, Country text, ItemType text, SalesChannel text,OrderPriority"  
-            +"text,OrderDate date,orderID text,ShipDate date,UnitsSold text, UnitPrice text,UnitCost text, TotalRevenue text,TotalCost text, TotalProfit Text)"; 
-            sqlinfo+="VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";  
+            // better implementation  
+            
+
+            String sqlinfo = "INSERT INTO mytable "; 
+            sqlinfo+= "(region, Country, itemtype, saleschannel, orderpriority, orderdate, orderid, shipdate, unitssold, unitprice, unitcost, totalrevenue,totalcost, totalprofit)"; 
+            sqlinfo+=" VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";  
             int temp =0;
             while(scanner.hasNextLine()) {  
                 if(temp !=0) { 
@@ -229,17 +232,20 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
         r.setValue(hello);
         
         inspector.consumeResponse(r);    
-       ObjectMetadata meta = new ObjectMetadata();
-        try {   
-            File stuff = new File(sqlname);
-            InputStream is = new FileInputStream(stuff);    
-            meta.setContentLength(stuff.length());
-            meta.setContentType("text/plain");
-            s3Client.putObject(sqlbucketname, sqlname, is, meta); 
-        } 
-        catch(FileNotFoundException e) { 
-            System.out.println("impossible");
-        }
+      // ObjectMetadata meta = new ObjectMetadata();
+     //   try {   
+          //  File stuff = new File(sqlname); 
+            logger.log("got past file  create");
+            //InputStream is = new FileInputStream(stuff);     
+            logger.log("got past input stream");
+            //meta.setContentLength(stuff.length());
+            //meta.setContentType("text/plain"); 
+             
+            s3Client.putObject(sqlbucketname, sqlname,new File(sqlname)); 
+       // } 
+       // catch(FileNotFoundException e) { 
+        //    System.out.println("impossible");
+       // }
         //****************END FUNCTION IMPLEMENTATION***************************
         
         //Collect final information such as total runtime and cpu deltas.
