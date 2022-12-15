@@ -110,7 +110,7 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
                 logger.log("trying to create table 'mytable'"); 
                
               //  ps = con.prepareStatement("CREATE TABLE mytable ( name text, col2 text, col3 text);"); 
-                ps = con.prepareStatement("CREATE TABLE mytable ( region varchar(500), country varchar(500), itemtype varchar(500), saleschannel varchar(500), orderpriority varchar(500), orderdate varchar(500), orderid varchar(500), shipdate varchar(500), unitssold varchar(500), unitprice varchar(500), unitcost varchar(500), totalrevenue varchar(500), totalcost varchar(500), totalprofit varchar(500));"); 
+                ps = con.prepareStatement("CREATE TABLE mytable ( region varchar(500), country varchar(500), itemtype varchar(500), saleschannel varchar(500), orderpriority varchar(500), orderdate varchar(500), orderid varchar(500), shipdate varchar(500), unitssold varchar(500), unitprice varchar(500), unitcost varchar(500), totalrevenue varchar(500), totalcost varchar(500), totalprofit varchar(500), grossmargin varchar(500));"); 
                 //ps = con.prepareStatement("CREATE TABLE mytable ( name text, col2 text, col3 text);");
                 logger.log("created table");
                 ps.execute();
@@ -159,8 +159,8 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
             
 
             String sqlinfo = "INSERT INTO mytable "; 
-            sqlinfo+= "(region, Country, itemtype, saleschannel, orderpriority, orderdate, orderid, shipdate, unitssold, unitprice, unitcost, totalrevenue,totalcost, totalprofit)"; 
-            sqlinfo+=" VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";  
+            sqlinfo+= "(region, country, itemtype, saleschannel, orderpriority, orderdate, orderid, shipdate, unitssold, unitprice, unitcost, totalrevenue,totalcost, totalprofit, grossmargin)"; 
+            sqlinfo+=" VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";  
             int temp =0;
             while(scanner.hasNextLine()) {  
                 if(temp !=0) { 
@@ -179,7 +179,8 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
                 ps.setString(11,arr[10]); 
                 ps.setString(12,arr[11]); 
                 ps.setString(13,arr[12]); 
-                ps.setString(14,arr[13]);  
+                ps.setString(14,arr[13]);   
+                ps.setString(15,arr[14]);
                 ps.execute(); 
                 } 
                 temp++;
@@ -240,8 +241,8 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
             logger.log("got past input stream");
             //meta.setContentLength(stuff.length());
             //meta.setContentType("text/plain"); 
-             
-            s3Client.putObject(sqlbucketname, sqlname,new File(sqlname)); 
+             String filePath ="/tmp/"+sqlname;
+            s3Client.putObject(sqlbucketname, sqlname,new File(filePath)); 
        // } 
        // catch(FileNotFoundException e) { 
         //    System.out.println("impossible");
