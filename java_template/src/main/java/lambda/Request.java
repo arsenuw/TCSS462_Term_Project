@@ -6,20 +6,32 @@ package lambda;
  */
 public class Request {
 
-    String name;
+    private String name; 
+    
+    private  String bucketname; 
+    private String filename; 
+    private String transformName;
 
-    private String bucketname;
-    private String filename;
-    private int row;
-    private int col;
+    public String getTransformName() {
+        return transformName;
+    }
 
+    public void setTransformName(String transformName) {
+        this.transformName = transformName;
+    }
+    private int row; 
+    private int col; 
+    
+    private String database;
+    private String sqlbucketname; 
+    private String sqlname;
 
     public String getName() {
         return name;
     }
     
     public String getNameALLCAPS() {
-        return name.toUpperCase();
+        return getName().toUpperCase();
     }
 
     public void setName(String name) {
@@ -34,35 +46,75 @@ public class Request {
 
     }
 
-    public String getBucketname(){
+    /**
+     * @return the bucketname
+     */
+    public String getBucketname() {
         return bucketname;
     }
 
-    public void setBucketname(String bucketname){
+    /**
+     * @param bucketname the bucketname to set
+     */
+    public void setBucketname(String bucketname) {
         this.bucketname = bucketname;
     }
 
-    public String getFilename(){
+    /**
+     * @return the filename
+     */
+    public String getFilename() {
         return filename;
     }
 
-    public void setFilename(String filename){
+    /**
+     * @param filename the filename to set
+     */
+    public void setFilename(String filename) {
         this.filename = filename;
+    } 
+
+    public  String getSQLbucketName() { 
+        return sqlbucketname;
     }
 
-    public int getCol(){
-        return col;
-    }
+    public void setSQLBucketName(String sqlbucketname) { 
+        this.sqlbucketname = sqlbucketname;
+    } 
+    
+    public String getsqlname() { 
+    	return sqlname;
+	} 
+	
+    public void setsqlname(String name) { 
+    sqlname = name;
+   }
 
-    public void setCol(int col){
-        this.col = col;
-    }
-
-    public int getRow(){
+    /**
+     * @return the row
+     */
+    public int getRow() {
         return row;
     }
 
-    public void setRow(int row){
+    /**
+     * @param row the row to set
+     */
+    public void setRow(int row) {
         this.row = row;
+    }
+
+    /**
+     * @return the col
+     */
+    public int getCol() {
+        return col;
+    }
+
+    /**
+     * @param col the col to set
+     */
+    public void setCol(int col) {
+        this.col = col;
     }
 }
