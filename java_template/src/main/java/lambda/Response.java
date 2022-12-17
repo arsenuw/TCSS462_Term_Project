@@ -65,7 +65,7 @@ public class Response extends saaf.Response {
     @Override
     public String toString()
     {  
-        return "value=" + this.getValue() + " " + this.getNamesString() + " "+this.getVersion()+" " + super.toString();  
+        return "value=" + this.getValue() + " " + this.getNamesString() +" " + super.toString();  
         
 
         

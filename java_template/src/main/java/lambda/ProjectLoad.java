@@ -66,7 +66,8 @@ public class ProjectLoad implements RequestHandler<Request, HashMap<String, Obje
         String filename = request.getFilename();    
        // String sqlbucketname= request.getSQLbucketName(); 
         //String sqlname = request.getsqlname();  
-        String sqlbucketname = "term-project-bucket-462";
+        //String sqlbucketname = "term-project-bucket-462"; 
+        String sqlbucketname = bucketname;
         String sqlname = "mytest.db";
 
         String srcBucket = bucketname; 

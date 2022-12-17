@@ -16,9 +16,17 @@ public class Request {
     private String database;
     private String sqlbucketname; 
     private String sqlname;
-
+    private String transformName;
     public String getName() {
         return name;
+    }  
+
+    public String getTransformName() { 
+        return transformName;
+    }
+    
+     public void setTransformName(String transformName) {
+        this.transformName = transformName;
     }
     
     public String getNameALLCAPS() {

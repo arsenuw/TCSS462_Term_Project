@@ -17,6 +17,16 @@ public class Response {
 
     // Return value
     private String value;
+   // private String bucketName; 
+   // private String fileName;  
+   /* 
+    public void setBucket(String b) {
+        this.bucketName = b;
+    }
+
+    public String getBucket() {
+        return bucketName;
+    } */
 
     public String getValue() {
         return value;
@@ -24,10 +34,19 @@ public class Response {
 
     public void setValue(String value) {
         this.value = value;
+    } 
+    /* 
+    public String getName() {
+        return fileName;
     }
 
+    public void setName(String value) {
+        this.fileName = value;
+    } */
+
     @Override
-    public String toString() {
+    public String toString() { 
+       // return "bucket=" + this.getBucket() + ", filename=" + this.getName() + super.toString();
         return "value=" + this.getValue() + super.toString();
     }
 }
